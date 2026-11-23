@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Production build output
-dist/
+# Production build output (committed for zero-config hosting on Render)
+# dist/
 dist-ssr/
 
 # Environment files

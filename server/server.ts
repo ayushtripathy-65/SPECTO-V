@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import { validateMinimizedPayload } from './validator';
 import { computePopulationBenchmark, SYNTHETIC_POPULATION } from './syntheticData';
 import {
@@ -164,6 +166,31 @@ app.get('/api/rejection-log', (req: Request, res: Response) => {
     count: rejectionAuditLog.length,
     logs: rejectionAuditLog,
   });
+});
+
+// Serve frontend build in production
+const distPath = path.join(process.cwd(), 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
+
+// Fallback for client-side SPA routing
+app.get('*', (req: Request, res: Response) => {
+  const indexPath = path.join(distPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.status(200).send(`
+    <!DOCTYPE html>
+    <html>
+      <head><title>DataShadow Web | Live</title></head>
+      <body style="font-family: system-ui, sans-serif; background: #020617; color: #f8fafc; padding: 40px; text-align: center;">
+        <h2 style="color: #38bdf8;">DataShadow Backend API is Live!</h2>
+        <p>API status: <a href="/api/health" style="color: #38bdf8; text-decoration: underline;">/api/health</a></p>
+        <p style="color: #94a3b8; font-size: 14px;">Frontend assets are being generated. Refresh in a few seconds or ensure build step completed.</p>
+      </body>
+    </html>
+  `);
 });
 
 export default app;

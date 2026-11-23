@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "vite",
-    "server": "tsx watch server/server.ts",
+    "server": "tsx server/server.ts",
+    "start": "tsx server/server.ts",
     "build": "tsc && vite build",
+    "postinstall": "tsc && vite build",
     "test": "vitest run",
     "test:watch": "vitest"
   },
